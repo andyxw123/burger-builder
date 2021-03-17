@@ -1,0 +1,45 @@
+.FormControl {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 5px;
+}
+
+.FormControl label {
+  font-weight: bold;
+}
+
+.FormControl > * {
+  display: block;
+  text-align: left;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.InputElement {
+  outline: none;
+  appearance: none;
+  font: inherit;
+  padding: 5px;
+}
+
+.InputElement:focus {
+    outline: none;
+    background-color: #eee;
+}
+
+.FormControl input
+ {
+    border-color: #eee;
+    border-radius: 5px;
+}
+
+.Invalid
+ {
+    border: 1px solid red;
+    background-color: salmon;
+}
+
+.Error
+{
+  color: red;
+}

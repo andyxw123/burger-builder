@@ -1,0 +1,21 @@
+.Order {
+  width: 95%;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 3px #ccc;
+  padding: 10px;
+  margin: 10px auto;
+  box-sizing: border-box;
+}
+
+.Ingredients {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  text-transform: capitalize;
+}
+
+@media (max-width: 500px) {
+  .Ingredients {
+    flex-direction: column;
+  }
+}

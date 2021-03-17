@@ -3,6 +3,10 @@ import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
+import axiosOrder from '../../axios-orders';
+import Spinner from './../../components/UI/Spinner/Spinner';
+import axiosErrorHandler from '../../hoc/axiosErrorHandler/axiosErrorHandler';
+import $ from 'jquery';
 
 export const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -11,18 +15,24 @@ export const INGREDIENT_PRICES = {
   meat: 1.3,
 };
 
-export default class BurgerBuilder extends Component {
+class BurgerBuilder extends Component {
   state = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0,
-    },
+    ingredients: null,
     totalPrice: 4,
     purchasable: false,
-    purchasing: false
+    purchasing: false,
+    isBusy: false,
+    error: null
   };
+
+  componentDidMount() {
+    axiosOrder.get('/ingredients.json').then((response) => {
+      this.setState({ ingredients: response.data });
+    })
+    .catch(error => {
+      this.setState({ error: true });
+    })
+  }
 
   updatePurchaseState = (ingredients) => {
     const sum = Object.keys(ingredients)
@@ -84,16 +94,21 @@ export default class BurgerBuilder extends Component {
   };
 
   purchaseHandler = () => {
-    this.setState({ purchasing: true })
-  }
+    this.setState({ purchasing: true });
+  };
 
   cancelPurchaseHandler = () => {
-    this.setState({ purchasing: false })
-  }
+    this.setState({ purchasing: false });
+  };
 
   purchaseContinuedHandler = () => {
+    this.setState({ isBusy: true });
 
-  }
+    this.props.history.push({
+        pathname: '/checkout',
+        search: $.param({ ...this.state.ingredients, price: this.state.totalPrice})
+    });
+  };
 
   render() {
     const disabledInfo = {
@@ -104,25 +119,47 @@ export default class BurgerBuilder extends Component {
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
 
-    return (
-      <Fragment>
-        <Modal show={this.state.purchasing} closed={this.cancelPurchaseHandler}>
-          <OrderSummary 
-            ingredients={this.state.ingredients}
-            totalPrice={this.state.totalPrice}
-            purchaseCancelled={this.cancelPurchaseHandler} 
-            purchaseContinued={this.purchaseContinuedHandler } />
-        </Modal>
-        <Burger ingredients={this.state.ingredients} />
-        <BuildControls
-          ingredientAdded={this.addIngredientHandler}
-          ingredientRemoved={this.removeIngredientHandler}
-          disabled={disabledInfo}
-          purchasable={this.state.purchasable}
-          price={this.state.totalPrice}
-          ordered={this.purchaseHandler}
+    let orderSummary = <Spinner />;
+
+    if (!this.state.isBusy) {
+      orderSummary = (
+        <OrderSummary
+          ingredients={this.state.ingredients}
+          totalPrice={this.state.totalPrice}
+          purchaseCancelled={this.cancelPurchaseHandler}
+          purchaseContinued={this.purchaseContinuedHandler}
         />
-      </Fragment>
-    );
+      );
+    }
+
+    let burger = <Spinner />;
+
+    if (this.state.error) {
+       burger = <p>Failed to load ingredients</p>
+    } else if (this.state.ingredients) {
+      burger = (
+        <Fragment>
+          <Modal
+            show={this.state.purchasing}
+            closed={this.cancelPurchaseHandler}
+          >
+            {orderSummary}
+          </Modal>
+          <Burger ingredients={this.state.ingredients} />
+          <BuildControls
+            ingredientAdded={this.addIngredientHandler}
+            ingredientRemoved={this.removeIngredientHandler}
+            disabled={disabledInfo}
+            purchasable={this.state.purchasable}
+            price={this.state.totalPrice}
+            ordered={this.purchaseHandler}
+          />
+        </Fragment>
+      );
+    }
+
+    return <Fragment>{burger}</Fragment>;
   }
 }
+
+export default axiosErrorHandler(BurgerBuilder, axiosOrder);
