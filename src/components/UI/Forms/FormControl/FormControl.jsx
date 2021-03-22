@@ -22,7 +22,7 @@ const formControl = (props) => {
       break;
     case 'input':
     default:
-      controlElement = <input />;
+      controlElement = <input required />;
       break;
   }
 

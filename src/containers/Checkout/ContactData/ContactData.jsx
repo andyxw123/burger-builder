@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
 import css from './ContactData.module.css';
 
 import Button from './../../../components/UI/Button/Button';
@@ -6,26 +8,29 @@ import Spinner from './../../../components/UI/Spinner/Spinner';
 import Form from '../../../components/UI/Forms/Form';
 
 import axiosOrder from '../../../axios-orders';
+import axiosErrorHandler from '../../../hoc/axiosErrorHandler/axiosErrorHandler';
+import * as ordersActions from '../../../store/order/orderActions';
 
-export default class ContactData extends Component {
+
+class ContactData extends Component {
   state = {
     isFormValid: false,
-    isBusy: false,
+    // Configuration to build the order form
     orderFormConfig: {
       name: {
-        tag: 'input',
-        label: 'Your Name',
-        config: {
+        tag: 'input',               //The type of form element to create
+        label: 'Your Name',         //Text for label above the form element
+        config: {                   //Attributes to decorate the form element
           type: 'text',
           placeholder: 'Your Name',
         },
-        validation: {
+        validation: {               //Validation rules 
           required: true,
         },
-        error: null,
-        touched: false,
-        value: '',
-        onChange: null, //(e) => { }
+        error: null,                //Error message to display below the form element
+        touched: false,             //Flag indicating whether the use has "touched" the form element
+        value: '',                  //The value of the form element
+        onChange: null,             //Change handler function
       },
       street: {
         tag: 'input',
@@ -108,23 +113,13 @@ export default class ContactData extends Component {
       (key) => (contactData[key] = this.state.orderFormConfig[key].value)
     );
 
-    this.setState({ isBusy: true });
-
     const order = {
       ingredients: this.props.ingredients,
       price: this.props.price, //In prod would re-calculate price on the server
       contact: contactData,
     };
 
-    axiosOrder
-      .post('/orders.json', order)
-      .then((response) => {
-        this.props.history.push('/');
-      })
-      .catch((error) => console.log(error))
-      .finally(() => {
-        this.setState({ isBusy: false });
-      });
+    this.props.dispatchPurchaseBurgerAsync(order);
   };
 
   checkValidity(value, rules) {
@@ -198,15 +193,31 @@ export default class ContactData extends Component {
       </Form>
     );
 
-    if (this.state.isBusy) {
+    if (this.props.isBusy) {
       form = <Spinner message='Placing order...' />;
     }
 
     return (
       <div className={css.ContactData}>
-        {!this.state.isBusy && <h4>Enter your contact info...</h4>}
+        {!this.props.isBusy && <h4>Enter your contact info...</h4>}
         {form}
       </div>
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    ingredients: state.burger.ingredients,
+    price: state.burger.totalPrice,
+    isBusy: state.order.isBusy
+  }
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatchPurchaseBurgerAsync: (orderData) => dispatch(ordersActions.purchaseBurgerAsync(orderData))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(axiosErrorHandler(ContactData, axiosOrder));

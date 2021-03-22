@@ -17,7 +17,7 @@ const order = (props) => {
     </div>
   );
 
-  const customer = order.customer;
+  const contact = order.contact;
 
   return (
     <div className={css.Order}>
@@ -25,7 +25,7 @@ const order = (props) => {
          <strong>Price: </strong>${order.price.toFixed(2)}
       </p>
       {ingredientList}
-      <p><strong>Customer: </strong>{customer.name}</p>
+      <p><strong>Customer: </strong>{contact.name}</p>
     </div>
   );
 };
