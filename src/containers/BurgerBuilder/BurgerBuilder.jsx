@@ -31,7 +31,10 @@ class BurgerBuilder extends Component {
 
   purchaseHandler = () => {
     this.setState({ purchasing: true });
+
     if (!this.props.isAuth) {
+      //Will direct back to the checkout after logging in
+      this.props.dispatchPurchaseInit();
       this.props.history.push('/auth?redirect=checkout');
     }
   };

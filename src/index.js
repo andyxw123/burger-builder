@@ -19,7 +19,10 @@ const rootReducer = combineReducers({
   order: orderReducer,
 });
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+//Only enable Redux Dev Tools for the development environment
+const reduxDevTools = process.env.NODE_ENV === "development" ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null;
+
+const composeEnhancers = reduxDevTools || compose;
 
 const store = createStore(
   rootReducer,

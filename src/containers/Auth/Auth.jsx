@@ -6,6 +6,7 @@ import Form from '../../components/UI/Forms/Form';
 import Button from '../../components/UI/Button/Button';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import * as authActions from '../../store/auth/authActions';
+import { checkValidity } from '../../components/UI/Forms/FormControl/FormControl';
 
 class Auth extends Component {
   state = {
@@ -43,45 +44,6 @@ class Auth extends Component {
       },
     },
   };
-
-  componentDidUpdate() {
-    if (this.props.isAuth) {
-      let redirectTo = new URLSearchParams(this.props.location.search).get("redirect") || '';
-
-      this.props.history.push(`/${redirectTo}`);
-    }
-  }
-
-  checkValidity(value, rules) {
-    if (!rules) {
-      return true;
-    }
-
-    let error = null;
-
-    if (rules.required && !value.trim()) {
-      error = 'Required';
-    }
-
-    if (!error && rules.minLength && value.length < rules.minLength) {
-      error = `Min length is ${rules.minLength}`;
-    }
-
-    if (!error && rules.maxLength && value.length > rules.maxLength) {
-      error = `Max length is ${rules.maxLength}`;
-    }
-
-    const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (
-      !error &&
-      rules.isEmail &&
-      !emailPattern.test(String(value).toLowerCase())
-    ) {
-      error = 'Email address not valid';
-    }
-
-    return error;
-  }
 
   onSubmitHandler = (event) => {
     event.preventDefault();
@@ -125,7 +87,7 @@ class Auth extends Component {
 
     updatedForm[field].touched = true;
     updatedForm[field].value = value;
-    updatedForm[field].error = this.checkValidity(
+    updatedForm[field].error = checkValidity(
       value,
       updatedForm[field].validation
     );
@@ -146,6 +108,13 @@ class Auth extends Component {
   };
 
   render() {
+
+    if (this.props.isAuth) {
+      let redirectTo = new URLSearchParams(this.props.location.search).get("redirect") || '';
+
+      return <Redirect to={redirectTo} />
+    }
+
     let error = null;
 
     if (this.props.error) {

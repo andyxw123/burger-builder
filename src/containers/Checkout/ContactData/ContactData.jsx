@@ -10,7 +10,7 @@ import Form from '../../../components/UI/Forms/Form';
 import axiosOrder from '../../../axios-orders';
 import axiosErrorHandler from '../../../hoc/axiosErrorHandler/axiosErrorHandler';
 import * as ordersActions from '../../../store/order/orderActions';
-
+import { checkValidity } from '../../../components/UI/Forms/FormControl/FormControl';
 
 class ContactData extends Component {
   state = {
@@ -123,33 +123,6 @@ class ContactData extends Component {
     this.props.dispatchPurchaseBurgerAsync(order);
   };
 
-  checkValidity(value, rules) {
-    if (!rules) {
-      return true;
-    }
-
-    let error = null;
-
-    if (rules.required && !value.trim()) {
-      error = 'Required';
-    }
-
-    if (!error && rules.minLength && value.length < rules.minLength) {
-      error = `Min length is ${rules.minLength}`;
-    }
-
-    if (!error && rules.maxLength && value.length > rules.maxLength) {
-      error = `Max length is ${rules.maxLength}`;
-    }
-
-    const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!error && rules.isEmail && !emailPattern.test(String(value).toLowerCase())) {
-      error = 'Email address not valid';
-    }
-
-    return error;
-  }
-
   checkFormValidity(formConfig) {
     let isFormValid = true;
 
@@ -173,7 +146,7 @@ class ContactData extends Component {
 
     updatedForm[field].touched = true;
     updatedForm[field].value = value;
-    updatedForm[field].error = this.checkValidity(
+    updatedForm[field].error = checkValidity(
       value,
       updatedForm[field].validation
     );

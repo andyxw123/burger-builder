@@ -19,6 +19,7 @@
 
 .Toolbar .Logo {
     height: 80%;
+    margin-right: auto;
 }
 
 @media (min-width: 500px) {
