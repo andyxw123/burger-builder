@@ -7,9 +7,9 @@ const order = (props) => {
   const ingredientList = (
     <div className={css.Ingredients}>
       {Object.keys(order.ingredients).map((key, i) => (
-        <Fragment>
+        <Fragment key={key}>
           {i === 0 && <strong>Ingredients</strong>}
-          <div key={key}>
+          <div>
             {key} ({order.ingredients[key]})
           </div>
         </Fragment>

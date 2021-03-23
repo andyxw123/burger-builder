@@ -21,29 +21,29 @@ const addIngredient = (state, action) => {
 };
 
 const removeIngredient = (state, action) => {
-    state.ingredients[action.key] = state.ingredients[action.key] - 1;
-    state.totalPrice = state.totalPrice - INGREDIENT_PRICES[action.key];
-  };
+  state.ingredients[action.key] = state.ingredients[action.key] - 1;
+  state.totalPrice = state.totalPrice - INGREDIENT_PRICES[action.key];
+};
 
-  const setIngredients = (state, action) => {
-    if (!action.payload) {
-      state.ingredients = initialState.ingredients;
-      state.totalPrice = initialState.totalPrice;
-      return;
-    }
+const setIngredients = (state, action) => {
+  if (!action.payload) {
+    state.ingredients = initialState.ingredients;
+    state.totalPrice = initialState.totalPrice;
+    return;
+  }
 
-    state.error = false;
-    state.ingredients = action.payload;
-  };
+  state.error = false;
+  state.ingredients = action.payload;
+};
 
 const fetchIngredientsFailed = (state) => {
-    state.error = true;
+  state.error = true;
 };
 
 export default createReducer(initialState, {
-    ...reducerBase,
-    [burgerActions.ADD_INGREDIENT]: addIngredient,
-    [burgerActions.REMOVE_INGREDIENT]: removeIngredient,
-    [burgerActions.SET_INGREDIENTS]: setIngredients,
-    [burgerActions.FETCH_INGREDIENTS_FAILED]: fetchIngredientsFailed
-  });
+  ...reducerBase,
+  [burgerActions.ADD_INGREDIENT]: addIngredient,
+  [burgerActions.REMOVE_INGREDIENT]: removeIngredient,
+  [burgerActions.SET_INGREDIENTS]: setIngredients,
+  [burgerActions.FETCH_INGREDIENTS_FAILED]: fetchIngredientsFailed,
+});

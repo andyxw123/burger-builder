@@ -114,6 +114,7 @@ class ContactData extends Component {
     );
 
     const order = {
+      userId: this.props.userId,
       ingredients: this.props.ingredients,
       price: this.props.price, //In prod would re-calculate price on the server
       contact: contactData,
@@ -139,6 +140,11 @@ class ContactData extends Component {
 
     if (!error && rules.maxLength && value.length > rules.maxLength) {
       error = `Max length is ${rules.maxLength}`;
+    }
+
+    const emailPattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!error && rules.isEmail && !emailPattern.test(String(value).toLowerCase())) {
+      error = 'Email address not valid';
     }
 
     return error;
@@ -210,7 +216,8 @@ const mapStateToProps = state => {
   return {
     ingredients: state.burger.ingredients,
     price: state.burger.totalPrice,
-    isBusy: state.order.isBusy
+    isBusy: state.order.isBusy,
+    userId : state.auth.userId
   }
 };
 

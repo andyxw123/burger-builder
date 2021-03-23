@@ -10,7 +10,7 @@ import * as orderActions from '../../store/order/orderActions';
 class Orders extends Component {
 
   componentDidMount() {
-    this.props.dispatchLoadOrdersAsync();
+    this.props.dispatchLoadOrdersAsync(this.props.token, this.props.userId);
   }
 
   render() {
@@ -36,13 +36,15 @@ const mapStateToProps = state => {
   return {
     orders: state.order.orders,
     isLoading: state.order.isOrdersLoading,
-    error: state.order.ordersError
+    error: state.order.ordersError,
+    token: state.auth.token,
+    userId: state.auth.userId
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    dispatchLoadOrdersAsync: () => dispatch(orderActions.loadOrdersAsync()),
+    dispatchLoadOrdersAsync: (token, userId) => dispatch(orderActions.loadOrdersAsync(token, userId)),
   }
 }
 
